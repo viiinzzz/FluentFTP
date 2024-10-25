@@ -211,7 +211,7 @@ namespace FluentFTP {
 							if (rateLimitBytes > 0) {
 								var timeShouldTake = limitCheckBytes * 1000 / rateLimitBytes;
 								if (timeShouldTake > swTime) {
-									await Task.Delay((int)(timeShouldTake - swTime), token);
+									await TaskEx.Delay((int)(timeShouldTake - swTime), token);
 									token.ThrowIfCancellationRequested();
 								}
 								else if (swTime > timeShouldTake + rateControlResolution) {

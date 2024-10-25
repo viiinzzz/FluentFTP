@@ -68,7 +68,11 @@ namespace FluentFTP.Servers {
 		/// Return true if you executed a server-specific command.
 		/// </summary>
 		public virtual Task<bool> DeleteDirectoryAsync(AsyncFtpClient client, string path, string ftppath, bool deleteContents, FtpListOption options, CancellationToken token) {
+#if NET40
+			return new Task<bool>(() => false);
+#else
 			return Task.FromResult(false);
+#endif
 		}
 
 		/// <summary>
@@ -84,7 +88,11 @@ namespace FluentFTP.Servers {
 		/// Return true if you executed a server-specific command.
 		/// </summary>
 		public virtual Task<bool> CreateDirectoryAsync(AsyncFtpClient client, string path, string ftppath, bool force, CancellationToken token) {
+#if NET40
+			return new Task<bool>(() => false);
+#else
 			return Task.FromResult(false);
+#endif
 		}
 
 		/// <summary>
@@ -100,7 +108,11 @@ namespace FluentFTP.Servers {
 		/// Return true if you executed a server-specific command.
 		/// </summary>
 		public virtual Task AfterConnectedAsync(AsyncFtpClient client, CancellationToken token) {
+#if NET40
+			return new Task(() => { });
+#else
 			return Task.CompletedTask;
+#endif
 		}
 
 		/// <summary>
@@ -123,7 +135,11 @@ namespace FluentFTP.Servers {
 		/// Return the file size in bytes.
 		/// </summary>
 		public virtual Task<long> GetFileSizeAsync(AsyncFtpClient client, string path, CancellationToken token) {
+#if NET40
+			return new Task<long>(() => 0L);
+#else
 			return Task.FromResult(0L);
+#endif
 		}
 
 		/// <summary>
@@ -176,7 +192,11 @@ namespace FluentFTP.Servers {
 		/// Return the absolute path.
 		/// </summary>
 		public virtual Task<string> GetAbsolutePathAsync(AsyncFtpClient client, string path, CancellationToken token) {
+#if NET40
+			return new Task<string>(() => path);
+#else
 			return Task.FromResult(path);
+#endif
 		}
 
 		/// <summary>
@@ -199,7 +219,11 @@ namespace FluentFTP.Servers {
 		/// Return the absolute path.
 		/// </summary>
 		public virtual Task<string> GetAbsoluteDirAsync(AsyncFtpClient client, string path, CancellationToken token) {
+#if NET40
+			return new Task<string>(() => null);
+#else
 			return Task.FromResult((string)null);
+#endif
 		}
 
 		/// <summary>
@@ -222,7 +246,11 @@ namespace FluentFTP.Servers {
 		/// Return concatenation of path and filename
 		/// </summary>
 		public virtual Task<string> GetAbsoluteFilePathAsync(AsyncFtpClient client, string path, string fileName, CancellationToken token) {
+#if NET40
+			return new Task<string>(() => !path.EndsWith("/") ? path + "/" + fileName : path + fileName);
+#else
 			return Task.FromResult(!path.EndsWith("/") ? path + "/" + fileName : path + fileName);
+#endif
 		}
 
 		/// <summary>
@@ -274,7 +302,11 @@ namespace FluentFTP.Servers {
 		/// Return null indicates custom code decided not to handle this
 		/// </summary>
 		public virtual Task<bool?> FileExistsAsync(AsyncFtpClient client, string path, CancellationToken token) {
+#if NET40
+			return new Task<bool?>(() => null);
+#else
 			return Task.FromResult((bool?)null);
+#endif
 		}
 	}
 }

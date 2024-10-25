@@ -357,7 +357,11 @@ namespace FluentFTP.Servers.Handlers {
 		public override Task<string> GetAbsoluteFilePathAsync(AsyncFtpClient client, string path, string fileName, CancellationToken token) {
 
 			if (!path.StartsWith("\'")) {
+#if NET40
+				return new Task<string>(() => null);
+#else
 				return Task.FromResult<string>(null);
+#endif
 			}
 
 			if (path.EndsWith(".\'")) {
@@ -367,7 +371,11 @@ namespace FluentFTP.Servers.Handlers {
 				path = path.TrimEnd('\'') + "(" + fileName.Substring(0, 8) + ")\'";
 			}
 
+#if NET40
+			return new Task<string>(() => path);
+#else
 			return Task.FromResult(path);
+#endif
 		}
 
 		/// <summary>

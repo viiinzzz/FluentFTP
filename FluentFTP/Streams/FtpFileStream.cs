@@ -28,11 +28,40 @@ namespace FluentFTP.Streams {
 		/// </summary>
 		public static async Task<long> GetFileSizeAsync(string localPath, bool checkExists, CancellationToken token) {
 			if (checkExists) {
-				if (!(await Task.Run(() => File.Exists(localPath), token))) {
-					return 0;
-				}
+                if (!(
+
+#if NET40
+                        await Task.Factory.StartNew(() =>
+#else
+                        await Task.Run(() => 
+#endif
+                            
+                            File.Exists(localPath), token)))
+                {
+                    return 0;
+                }
+
+                if (!(
+#if NET40
+                    File.Exists(localPath)
+#else
+				    await Task.Run(() => File.Exists(localPath), token))
+#endif
+                ))
+                {
+                    return 0;
+                }
 			}
-			return (await Task.Run(() => new FileInfo(localPath), token)).Length;
+
+
+
+            return (
+#if NET40
+                await Task.Factory.StartNew(() =>
+#else
+                await Task.Run(() =>
+#endif
+                    new FileInfo(localPath), token)).Length;
 		}
 
 		/// <summary>
@@ -46,7 +75,13 @@ namespace FluentFTP.Streams {
 		/// Returns the file size using synchronous file I/O.
 		/// </summary>
 		public static async Task<DateTime> GetFileDateModifiedUtcAsync(string localPath, CancellationToken token) {
-			return (await Task.Run(() => new FileInfo(localPath), token)).LastWriteTimeUtc;
+			return (
+#if NET40
+                await Task.Factory.StartNew(() =>
+#else
+                await Task.Run(() =>
+#endif
+                    new FileInfo(localPath), token)).LastWriteTimeUtc;
 		}
 
 		/// <summary>

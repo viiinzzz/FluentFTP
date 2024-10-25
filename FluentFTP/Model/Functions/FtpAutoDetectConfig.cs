@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Security.Authentication;
 using SysSslProtocols = System.Security.Authentication.SslProtocols;
 
 namespace FluentFTP.Model.Functions {
@@ -35,7 +36,8 @@ namespace FluentFTP.Model.Functions {
 		/// List of protocols to be tried, and the order they should be tried in.
 		/// </summary>
 		public List<SysSslProtocols> ProtocolPriority { get; set; } = new List<SysSslProtocols> {
-			SysSslProtocols.Tls11 | SysSslProtocols.Tls12,
+			(SslProtocols)(int)(
+			SslProtocolsEx.Tls11 | SslProtocolsEx.Tls12)
 			// Do not EVER use "Default". It boils down to "SSL or TLS1.0" or worse.
 			// Do not use "None" - it can connect to TLS13, but Session Resume won't work, so a successful AutoDetect will be a false truth.
 		};

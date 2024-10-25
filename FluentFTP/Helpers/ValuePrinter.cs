@@ -19,7 +19,11 @@ namespace FluentFTP.Helpers {
 			StringBuilder result = new StringBuilder();
 			foreach (var property in properties) {
 				string p = property.Name;
+#if NET40
+				object v = property.GetValue(obj, null);
+#else
 				object v = property.GetValue(obj);
+#endif
 
 				result.Append(p);
 				result.Append(" = ");

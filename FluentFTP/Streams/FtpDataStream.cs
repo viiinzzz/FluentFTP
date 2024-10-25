@@ -84,7 +84,11 @@ namespace FluentFTP {
 		/// <param name="count">Number of bytes to read</param>
 		/// <param name="token">The cancellation token for this task</param>
 		/// <returns>The number of bytes read</returns>
-		public override async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken token) {
+		public
+#if !NET40
+		//override
+#endif
+		async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken token) {
 			int read = await base.ReadAsync(buffer, offset, count, token);
 			m_position += read;
 			return read;
@@ -133,7 +137,11 @@ namespace FluentFTP {
 		/// <param name="offset">Where to start in the buffer</param>
 		/// <param name="count">The number of bytes to write to the buffer</param>
 		/// <param name="token">The <see cref="CancellationToken"/> for this task</param>
-		public override async Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken token) {
+		public
+#if !NET40
+		//override
+#endif
+		async Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken token) {
 			await base.WriteAsync(buffer, offset, count, token);
 			m_position += count;
 		}

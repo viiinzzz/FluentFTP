@@ -25,6 +25,10 @@ namespace FluentFTP.Client.BaseClient {
 			// async: This dispose handled in the AsyncFtpClient
 			await ((IAsyncFtpClient)this).DisposeAsync();
 		}
+#elif NET40
+			async Task IInternalFtpClient.DisposeInternal(CancellationToken token) {
+				Dispose();
+			}
 #else
 		async Task IInternalFtpClient.DisposeInternal(CancellationToken token) {
 			// async: This dispose handled in the BaseFtpClient

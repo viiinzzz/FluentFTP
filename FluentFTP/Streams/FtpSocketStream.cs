@@ -127,9 +127,13 @@ namespace FluentFTP {
 				if (ConnectionState == FtpConnectionState.PendingDisconnect) {
 					((IInternalFtpClient)Client).LogStatus(FtpTraceLevel.Verbose, "Connection state pending down. Closing");
 					if (Client is AsyncFtpClient) {
+#if NET40
+                        CloseAsync().Wait();
+#else
 						Task.Run(async () => await CloseAsync()).Wait();
-					}
-					else {
+#endif
+                    }
+                    else {
 						Close();
 					}
 				}
@@ -386,7 +390,11 @@ namespace FluentFTP {
 		/// Flushes the stream asynchronously
 		/// </summary>
 		/// <param name="token">The <see cref="CancellationToken"/> for this task</param>
-		public override async Task FlushAsync(CancellationToken token) {
+		public
+#if !NET40
+		override 
+#endif
+        async Task FlushAsync(CancellationToken token) {
 			await BaseStream.FlushAsync(token);
 		}
 
@@ -506,7 +514,11 @@ namespace FluentFTP {
 		/// <param name="count">Number of bytes to be read</param>
 		/// <param name="token">The <see cref="CancellationToken"/> for this task</param>
 		/// <returns>The amount of bytes read from the stream</returns>
-		public override async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken token) {
+		public
+#if !NET40
+		override 
+#endif
+        async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken token) {
 			if (BaseStream == null) {
 				return 0;
 			}
@@ -760,7 +772,11 @@ namespace FluentFTP {
 		/// <param name="offset">Where in the buffer to start</param>
 		/// <param name="count">Number of bytes to be written</param>
 		/// <param name="token">The <see cref="CancellationToken"/> for this task</param>
-		public override async Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken token) {
+		public
+#if !NET40
+		override 
+#endif
+        async Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken token) {
 			if (BaseStream == null) {
 				return;
 			}
@@ -1011,11 +1027,17 @@ namespace FluentFTP {
 		/// </summary>
 		/// <param name="host">The host to query</param>
 		/// <param name="token">The token that can be used to cancel the entire process</param>
-		private async Task<IPAddress[]> GetCachedHostAddressesAsync(string host, CancellationToken token) {
+#if NET40
+		private IPAddress[] GetCachedHostAddresses(string host, CancellationToken token) {
+#else
+        private async Task<IPAddress[]> GetCachedHostAddressesAsync(string host, CancellationToken token) {
+#endif
 
 			if (!Client.Status.CachedHostIpads.TryGetValue(host, out IPAddress[] ipads)) {
 #if NET6_0_OR_GREATER
 				ipads = await Dns.GetHostAddressesAsync(host, token);
+#elif NET40
+                ipads = Dns.GetHostAddresses(host);
 #else
 				ipads = await Dns.GetHostAddressesAsync(host);
 #endif
@@ -1033,8 +1055,11 @@ namespace FluentFTP {
 		/// <param name="ipVersions">Internet Protocol versions to support during the connection phase</param>
 		/// <param name="token">The token that can be used to cancel the entire process</param>
 		public async Task ConnectAsync(string host, int port, FtpIpVersion ipVersions, CancellationToken token) {
-
+#if NET40
+			IPAddress[] ipads = GetCachedHostAddresses(host, token);
+#else
 			IPAddress[] ipads = await GetCachedHostAddressesAsync(host, token);
+#endif
 			IPAddress ipad = null;
 
 			if (ipVersions == 0) {
@@ -1131,7 +1156,7 @@ namespace FluentFTP {
 			try {
 				using (var timeoutSrc = CancellationTokenSource.CreateLinkedTokenSource(token)) {
 					timeoutSrc.CancelAfter(ConnectTimeout);
-#if NET462
+#if NET462 || NET40
 					var connectResult = m_socket.BeginConnect(ipad, port, null, null);
 					await EnableCancellation(Task.Factory.FromAsync(connectResult, m_socket.EndConnect), timeoutSrc.Token, () => DisposeSocket());
 #else
@@ -1311,6 +1336,25 @@ namespace FluentFTP {
 							CertificateRevocationCheckMode = Client.Config.ValidateCertificateRevocation ? X509RevocationMode.Online : X509RevocationMode.NoCheck
 						};
 						await m_sslStream.AuthenticateAsClientAsync(options, token);
+#elif NET40
+						if (clientCerts == null || clientCerts.Count == 0)
+                        {
+                            await m_sslStream.AuthenticateAsClientAsync(targetHost);
+                        }
+                        else
+                        {
+							//TODO investigate
+                            throw new Exception("secured auth not supported");
+
+
+
+                            // var cert1 = clientCerts[0];
+                            // await m_sslStream.AuthenticateAsServerAsync(targetHost, cert1);
+                                //, sslProtocols, Client.Config.ValidateCertificateRevocation);
+
+
+
+                        }
 #else
 						await m_sslStream.AuthenticateAsClientAsync(targetHost, clientCerts, sslProtocols, Client.Config.ValidateCertificateRevocation);
 #endif

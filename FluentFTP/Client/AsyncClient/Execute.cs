@@ -20,7 +20,11 @@ namespace FluentFTP {
 			bool reconnect = false;
 			string reconnectReason = string.Empty;
 
+#if NET40
+			m_daemonSemaphore.Wait(token);
+#else
 			await m_daemonSemaphore.WaitAsync(token);
+#endif
 			m_daemonSemaphore.Release();
 
 			// Automatic reconnect because we lost the control channel?
@@ -99,7 +103,11 @@ namespace FluentFTP {
 			Log(FtpTraceLevel.Info, "Command:  " + cleanedCommand);
 
 			// send command to FTP server
+#if NET40
+            m_daemonSemaphore.Wait(token);
+#else
 			await m_daemonSemaphore.WaitAsync(token);
+#endif
 			try {
 				await m_stream.WriteLineAsync(m_textEncoding, command, token);
 				LastCommandExecuted = command;

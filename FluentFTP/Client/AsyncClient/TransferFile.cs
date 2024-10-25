@@ -203,7 +203,7 @@ namespace FluentFTP {
 							}
 						}
 
-						await Task.Delay(Config.FXPProgressInterval, token);
+						await TaskEx.Delay(Config.FXPProgressInterval, token);
 					}
 
 					LogWithPrefix(FtpTraceLevel.Info, $"FXP transfer of file {sourcePath} has completed");

@@ -82,6 +82,8 @@ namespace FluentFTP.Client.BaseClient {
 #if NETSTANDARD2_1_OR_GREATER || NET5_0_OR_GREATER
 
 					Task.Run(() => ((IAsyncFtpClient)this).DisposeAsync()).Wait();
+#elif NET40
+					((IAsyncFtpClient)this).Dispose();
 #else
 					Task.Run(() => ((IAsyncFtpClient)this).Dispose()).Wait();
 #endif

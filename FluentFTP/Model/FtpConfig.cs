@@ -256,7 +256,8 @@ namespace FluentFTP {
 		/// Encryption protocols to use. Only valid if EncryptionMode property is not equal to <see cref="FtpEncryptionMode.None"/>.
 		/// Default value is .NET Framework defaults from the <see cref="System.Net.Security.SslStream"/> class.
 		/// </summary>
-		public SslProtocols SslProtocols { get; set; } = SslProtocols.Tls12 | SslProtocols.Tls11 | SslProtocols.Tls;
+		public SslProtocols SslProtocols { get; set; } = (SslProtocols)(int)(
+								 SslProtocolsEx.Tls12 | SslProtocolsEx.Tls11 | SslProtocolsEx.Tls);
 
 		/// <summary>
 		/// Gets or sets the max number of socket write/read transactions

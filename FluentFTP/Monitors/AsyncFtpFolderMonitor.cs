@@ -17,17 +17,17 @@ namespace FluentFTP.Monitors {
 		/// <summary>
 		/// Event triggered when files are changed (when the file size changes).
 		/// </summary>
-		public event EventHandler<List<string>> FilesChanged;
+		public event EventHandler<FileListEventArgs> FilesChanged;
 
 		/// <summary>
 		/// Event triggered when files are added (if a new file exists, that was not on the server before).
 		/// </summary>
-		public event EventHandler<List<string>> FilesAdded;
+		public event EventHandler<FileListEventArgs> FilesAdded;
 
 		/// <summary>
 		/// Event triggered when files are deleted (if a file is missing, which existed on the server before)
 		/// </summary>
-		public event EventHandler<List<string>> FilesDeleted;
+		public event EventHandler<FileListEventArgs> FilesDeleted;
 
 		/// <summary>
 		/// Event triggered when any change is detected
@@ -106,9 +106,9 @@ namespace FluentFTP.Monitors {
 				filesDeleted = _lastListing.Keys.Except(currentListing.Keys).ToList();
 
 				// Trigger events
-				if (filesAdded.Count > 0) FilesAdded?.Invoke(this, filesAdded);
-				if (filesChanged.Count > 0) FilesChanged?.Invoke(this, filesChanged);
-				if (filesDeleted.Count > 0) FilesDeleted?.Invoke(this, filesDeleted);
+				if (filesAdded.Count > 0) FilesAdded?.Invoke(this, new FileListEventArgs { items = filesAdded});
+				if (filesChanged.Count > 0) FilesChanged?.Invoke(this, new FileListEventArgs { items = filesChanged});
+				if (filesDeleted.Count > 0) FilesDeleted?.Invoke(this, new FileListEventArgs { items = filesDeleted});
 
 				if (filesAdded.Count > 0 || filesChanged.Count > 0 || filesDeleted.Count > 0) {
 					ChangeDetected?.Invoke(this, EventArgs.Empty);

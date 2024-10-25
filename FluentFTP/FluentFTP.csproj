@@ -19,7 +19,7 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <TargetFrameworks>net5.0;net6.0;net462;net472;netstandard2.0;netstandard2.1</TargetFrameworks>
+        <TargetFrameworks>net4</TargetFrameworks>
         <Platforms>AnyCPU;x64</Platforms>
         <PackageReadmeFile></PackageReadmeFile>
         <RepositoryUrl>https://github.com/robinrodricks/FluentFTP</RepositoryUrl>
@@ -35,6 +35,10 @@
             <Pack>True</Pack>
             <PackagePath></PackagePath>
         </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.Bcl.Async" Version="1.0.168" />
     </ItemGroup>
 
     <PropertyGroup Condition="'$(Configuration)'=='Release'">

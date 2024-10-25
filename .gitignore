@@ -1,4 +1,6 @@
-*/bin
+#*/bin
+!*/bin/Debug/net4
+!*/bin/Release/net4
 */obj
 */nuget
 
@@ -25,3 +27,7 @@ API_Reference_CHM.shfbproj_jp
 FluentFTP.Tests/testdata
 *.yaml
 /Powershell/FluentFTP.dll
+/FluentFTP.copy
+FluentFTP/FluentFTP.sln
+*.ncrunchsolution
+*.bak

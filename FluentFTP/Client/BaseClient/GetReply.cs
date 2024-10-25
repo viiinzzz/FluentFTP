@@ -320,7 +320,13 @@ namespace FluentFTP.Client.BaseClient {
 			long previousElapsedTime = 0;
 
 			if (useSema) {
+#if NET40
+				m_daemonSemaphore.Wait();
+				//, token);
+#else
 				await m_daemonSemaphore.WaitAsync();
+				//, token);
+#endif
 			}
 
 			try {
